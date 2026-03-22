@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Monitor | Live News Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #05070a;
+            --panel-bg: rgba(15, 20, 30, 0.7);
+            --accent-blue: #00f2ff;
+            --accent-red: #ff3e3e;
+            --text-main: #e0e6ed;
+            --text-muted: #8892b0;
+            --border-glow: rgba(0, 242, 255, 0.3);
+            --glass-blur: blur(12px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(18, 16, 16, 0.8) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 100%, 100% 4px, 100% 100%;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(10, 15, 25, 0.8);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .logo {
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px var(--accent-blue);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-red);
+            text-transform: uppercase;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(255, 62, 62, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 62, 62, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 62, 62, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 62, 62, 0); }
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .feed-container {
+            flex: 4;
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        #main-player {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls {
+            flex: 1;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: var(--glass-blur);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+
+        h3 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        .channel-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 12px;
+            text-align: left;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+        }
+
+        .channel-btn:hover {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: var(--accent-blue);
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+
+        .channel-btn.active {
+            border-left: 4px solid var(--accent-blue);
+            background: rgba(0, 242, 255, 0.05);
+            border-color: rgba(0, 242, 255, 0.5);
+        }
+
+        .channel-info {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .ticker {
+            height: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid var(--border-glow);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .ticker-label {
+            background: var(--accent-red);
+            color: white;
+            padding: 0 15px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .ticker-text {
+            white-space: nowrap;
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 30s linear infinite;
+            color: var(--accent-blue);
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* Scanline Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Glitch effect on hover */
+        .premium-glow {
+            text-shadow: 0 0 5px var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <header>
+        <div class="logo">
+            <i>⬢</i> MONITOR <span style="font-weight: 300; opacity: 0.5;">LIVE.SYS</span>
+        </div>
+        <div class="status-badge">
+            <div class="pulse"></div>
+            SYNC STATUS: NOMINAL [2026-MAR-22]
+        </div>
+    </header>
+
+    <main>
+        <div class="feed-container">
+            <iframe id="main-player" 
+                    src="https://www.youtube.com/embed/live_stream?channel=UCNye-wNBqNL5ZzHSJj3l8Bg&autoplay=1&mute=1" 
+                    allow="autoplay; encrypted-media; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+
+        <div class="controls">
+            <div class="panel">
+                <h3>Global Intelligence Feeds</h3>
+                <button class="channel-btn active" onclick="switchChannel('UCNye-wNBqNL5ZzHSJj3l8Bg', this)">
+                    <span class="channel-info">AL JAZEERA</span>
+                    <small style="opacity: 0.5;">WORLD</small>
+                </button>
+                <button class="channel-btn" onclick="switchChannel('UCoMdktPbST7yypVfICDWt_g', this)">
+                    <span class="channel-info">SKY NEWS UK</span>
+                    <small style="opacity: 0.5;">GLOBAL</small>
+                </button>
+                <button class="channel-btn" onclick="switchChannel('UCQfwfsi5VrQ8yKZ-zAWZu3g', this)">
+                    <span class="channel-info">FRANCE 24</span>
+                    <small style="opacity: 0.5;">EUROPE</small>
+                </button>
+                <button class="channel-btn" onclick="switchChannel('UC83WHFaf766M7TAsK2HwJMA', this)">
+                    <span class="channel-info">CNA ASIA</span>
+                    <small style="opacity: 0.5;">ASIA-PAC</small>
+                </button>
+                <button class="channel-btn" onclick="switchChannel('UC0OfLgdKNo63W6VNCFv9nNQ', this)">
+                    <span class="channel-info">DW NEWS</span>
+                    <small style="opacity: 0.5;">SCIENCE/GEO</small>
+                </button>
+            </div>
+
+            <div class="panel" style="flex: 1;">
+                <h3>System Analytics</h3>
+                <div style="font-size: 0.8rem; line-height: 1.6; color: var(--text-muted);">
+                    <p>> CPU: 24% STABLE</p>
+                    <p>> NET: 450MB/S UP-LINK</p>
+                    <p>> GRID: SECTOR 7-G</p>
+                    <p style="margin-top: 10px; color: var(--accent-blue);">PROMPT RECOGNIZED: INITIALIZING LIVE_FEED_MGR...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="ticker">
+        <div class="ticker-label">BREAKING</div>
+        <div class="ticker-text">
+            URGENT: GLOBAL MONITOR DASHBOARD INITIALIZED... REAL-TIME NEWS FEEDS CONNECTED VIA YOUTUBE STREAM API... ALL SECTORS REPORTING NOMINAL DATA FLOW... NEW INTEL RECOVERED FROM SECTOR 4...
+        </div>
+    </div>
+
+    <script>
+        function switchChannel(channelId, btn) {
+            // Update Iframe URL
+            const player = document.getElementById('main-player');
+            player.src = `https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1&mute=1`;
+
+            // Update Active State on Buttons
+            document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            console.log(`Switching to channel: ${channelId}`);
+        }
+
+        // Add some random noise/glitch effects to the logo occasionally
+        setInterval(() => {
+            const logo = document.querySelector('.logo i');
+            logo.style.textShadow = Math.random() > 0.9 ? '0 0 20px var(--accent-red)' : '0 0 10px var(--accent-blue)';
+        }, 3000);
+    </script>
+</body>
+</html>
